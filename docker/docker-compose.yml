@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  spring-boot:
+    image: hpdts/awesome-book-docker:latest
+    depends_on:
+      - demo-mysql
+      - myrabbit
+    ports:
+      - 8080:8080
+    environment:
+      RABBIT_HOST: myrabbit
+    links:
+      - demo-mysql
+      - myrabbit
+    restart: always
+
+  demo-mysql:
+    image: mysql:latest
+    build:
+      context: .
+      dockerfile: mysql_dockerfile
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: books
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test123
+    restart: always
+    container_name: demo-mysql
+
+  myrabbit:
+    image: rabbitmq:management
+    ports:
+      - 5672:5672
+    container_name: myrabbit
+    restart: always
+
